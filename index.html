@@ -2,49 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>9times</title>
     
-    <!-- Icons and Font -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- RESET & BASICS --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: #ffffff;
             color: #000000;
             font-family: 'Space Grotesk', sans-serif;
-            height: 100vh;
+            /* FIX: Use svh so it fits perfectly inside mobile address bars */
+            height: 100vh; 
+            height: 100svh; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            perspective: 600px; 
+            perspective: 1000px;
         }
 
-        /* --- NEW BACKGROUND GIF STYLES --- */
         .background-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Places it behind everything */
-            overflow: hidden;
+            z-index: -1;
         }
 
         .background-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures the GIF fills the screen without stretching */
-            pointer-events: none;
-            /* Adjust opacity here (0.1 to 1.0) to make the GIF more or less subtle */
+            object-fit: cover;
             opacity: 0.5; 
         }
 
-        /* Optional: adds a slight tint to ensure the logo/icons pop */
         .bg-overlay {
             position: fixed;
             top: 0;
@@ -60,25 +55,26 @@
 
         /* --- MAIN LAYOUT --- */
         main {
-            flex: 1;
+            flex: 1; /* This takes up all available space between top and footer */
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            padding: 20px;
+            padding: 10px;
+            touch-action: none; 
         }
 
         /* --- 3D CONTAINER --- */
         .tilt-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 500px;
+            width: 90vw; /* Responsive width */
+            max-width: 450px;
             aspect-ratio: 1 / 1; 
-            max-height: 70vh;
+            max-height: 50vh; /* Reduced height on mobile to leave room for buttons */
             transform-style: preserve-3d;
             will-change: transform;
-            transform: rotateX(0) rotateY(0);
             cursor: pointer;
+            transition: transform 0.1s ease-out;
         }
 
         .main-logo {
@@ -88,11 +84,10 @@
             display: block;
             backface-visibility: hidden;
             pointer-events: none;
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
+        .tilt-wrapper.active .main-logo,
         .tilt-wrapper:hover .main-logo {
             opacity: 0;
             transform: scale(0.5) rotate(180deg);
@@ -109,11 +104,12 @@
             grid-template-rows: repeat(9, 1fr);
             opacity: 0;
             pointer-events: none; 
-            transform: translateZ(2px); 
+            transform: translateZ(20px); 
             transform-style: preserve-3d; 
             transition: opacity 0.3s ease;
         }
 
+        .tilt-wrapper.active .logo-grid,
         .tilt-wrapper:hover .logo-grid {
             opacity: 1;
             pointer-events: auto;
@@ -130,40 +126,40 @@
             transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
+        .tilt-wrapper.active .mini-logo,
         .tilt-wrapper:hover .mini-logo {
             transform: scale(0.6) rotate(0deg);
         }
 
         .mini-logo:hover {
-            transform: scale(1.6) translateZ(80px) rotate(0deg) !important; 
+            transform: scale(1.6) translateZ(60px) rotate(0deg) !important; 
             z-index: 100;
-            transition: transform 0.1s ease-out; 
         }
 
         /* --- FOOTER --- */
         footer {
             width: 100%;
-            padding-bottom: 20px;
+            padding: 15px 0;
             display: flex;
             justify-content: center;
-            flex-shrink: 0;
+            flex-shrink: 0; /* Prevents footer from squishing */
             z-index: 10;
         }
 
         .social-icons {
             display: flex;
-            gap: 35px;
-            font-size: 1.5rem;
+            gap: 30px;
+            font-size: 1.4rem;
         }
 
-        /* --- SCROLLING TICKER --- */
+        /* --- TICKER --- */
         .ticker-wrap {
             width: 100%;
-            background-color: rgba(255,255,255,0.8); /* Made slightly transparent */
+            background-color: rgba(255,255,255,0.8);
             overflow: hidden;
             white-space: nowrap;
             border-top: 1px solid #000;
-            padding: 8px 0;
+            padding: 6px 0;
             flex-shrink: 0;
         }
 
@@ -174,7 +170,7 @@
 
         .ticker-item {
             display: inline-block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             padding-right: 15px; 
             letter-spacing: 1px;
@@ -185,23 +181,21 @@
             100% { transform: translateX(-50%); }
         }
 
-        @media (max-width: 768px) {
-            .tilt-wrapper { max-width: 80%; }
-            .social-icons { font-size: 1.3rem; gap: 25px; }
-            .ticker-item { font-size: 0.7rem; }
+        /* Responsive Tweaks */
+        @media (max-width: 480px) {
+            .tilt-wrapper { max-height: 45vh; } /* Make logo smaller on small phones */
+            .social-icons { gap: 20px; font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- BACKGROUND GIF CONTAINER -->
     <div class="background-container">
-        <!-- REPLACE 'background.gif' with your actual file name -->
         <img src="background.gif" alt="background">
         <div class="bg-overlay"></div>
     </div>
 
-    <main>
+    <main id="interactionArea">
         <div class="tilt-wrapper" id="tiltCard">
             <img src="logo.png" alt="9times" class="main-logo">
             <div class="logo-grid" id="gridContainer"></div>
@@ -224,30 +218,49 @@
 
     <script>
         const gridContainer = document.getElementById('gridContainer');
-        const total = 9 * 9; 
-
-        for (let i = 0; i < total; i++) {
+        for (let i = 0; i < 81; i++) {
             const div = document.createElement('div');
             div.classList.add('mini-logo');
             gridContainer.appendChild(div);
         }
 
         const card = document.getElementById('tiltCard');
-        
-        document.addEventListener('mousemove', (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
+        const mainArea = document.getElementById('interactionArea');
+
+        function handleMove(e) {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
-            const xPct = (x / windowWidth) - 0.5;
-            const yPct = (y / windowHeight) - 0.5;
-            const maxRotate = 35; 
+            
+            const xPct = (clientX / windowWidth) - 0.5;
+            const yPct = (clientY / windowHeight) - 0.5;
+            
+            const maxRotate = 25; 
             const rotateX = -1 * yPct * maxRotate * 2;
             const rotateY = 1 * xPct * maxRotate * 2;
+            
             card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }
+
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
         });
 
-        document.addEventListener('mouseleave', () => {
+        mainArea.addEventListener('touchstart', (e) => {
+            card.classList.add('active');
+            handleMove(e);
+        }, { passive: false });
+
+        mainArea.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            handleMove(e);
+        }, { passive: false });
+
+        mainArea.addEventListener('touchend', () => {
+            card.classList.remove('active');
             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
         });
 
